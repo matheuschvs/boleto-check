@@ -1,13 +1,17 @@
 import { Request, Response } from 'express'
 
-import { verifyBoletoService } from '../services/VerifyBoletoService'
+import { VerifyBoletoService } from '../services/VerifyBoletoService'
 
-const verifyBoletoController = (request: Request, response: Response) => {
-  const { digitableLine } = request.params
+class VerifyBoletoController {
+  handle(request: Request, response: Response) {
+    const { digitableLine } = request.params
 
-  const resObject = verifyBoletoService.execute({ digitableLine })
+    const verifyBoletoService = new VerifyBoletoService()
 
-  return response.json(resObject)
+    const resObject = verifyBoletoService.execute({ digitableLine })
+
+    return response.json(resObject)
+  }
 }
 
-export { verifyBoletoController }
+export { VerifyBoletoController }

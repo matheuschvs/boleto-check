@@ -1,9 +1,11 @@
 import { Router } from 'express'
 
-import { verifyBoletoController } from '../controllers/verifyBoletoController'
+import { VerifyBoletoController } from '../controllers/verifyBoletoController'
+
+const verifyBoletoController = new VerifyBoletoController()
 
 const boletosRoutes = Router()
 
-boletosRoutes.get('/:digitableLine', verifyBoletoController)
+boletosRoutes.get('/:digitableLine', verifyBoletoController.handle)
 
 export { boletosRoutes }

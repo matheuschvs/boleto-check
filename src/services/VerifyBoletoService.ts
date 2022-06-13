@@ -8,5 +8,5 @@ class VerifyBoletoService {
   }
 }
 
-const verifyBoletoService = new VerifyBoletoService();
-export { verifyBoletoService }
+
+export { VerifyBoletoService }
