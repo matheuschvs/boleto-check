@@ -3,15 +3,7 @@ import { VerifyBoletoService } from "./VerifyBoletoService"
 
 let verifyBoletoService = new VerifyBoletoService()
 
-describe('Verify Boleto', () => {
-  it('should be able to return the boleto data', () => {
-    const boletoData = verifyBoletoService.execute({
-      digitableLine: '21290001192110001210904475617405975870000002000'
-    })
-
-    expect(boletoData).toHaveProperty('barCode')
-  })
-
+describe('Digitable line general checks', () => {
   it(
     'should not accept a digitable line containing anything other than numbers',
     () => {
