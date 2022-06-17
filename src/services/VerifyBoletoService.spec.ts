@@ -227,3 +227,140 @@ describe('Check collection slip response', () => {
     }
   )
 })
+
+describe('Check bank slip digitable line', () => {
+  it(
+    'should not accept a digitable line containing an invalid bank code',
+    () => {
+      expect(() => {
+        verifyBoletoService.execute({
+          digitableLine: '99990001192110001210904475617405975870000002000'
+        })
+      }).toThrow(AppError)
+    }
+  )
+
+  it(
+    'should not accept a digitable line containing an invalid currency code',
+    () => {
+      expect(() => {
+        verifyBoletoService.execute({
+          digitableLine: '21200001192110001210904475617405975870000002000'
+        })
+      }).toThrow(AppError)
+    }
+  )
+
+  it(
+    'should not accept a digitable line containing a wrong first field check digit',
+    () => {
+      expect(() => {
+        verifyBoletoService.execute({
+          digitableLine: '21290001102110001210904475617405975870000002000'
+        })
+      }).toThrow(AppError)
+    }
+  )
+
+  it(
+    'should not accept a digitable line containing a wrong second field check digit',
+    () => {
+      expect(() => {
+        verifyBoletoService.execute({
+          digitableLine: '21290001192110001210004475617405975870000002000'
+        })
+      }).toThrow(AppError)
+    }
+  )
+
+  it(
+    'should not accept a digitable line containing a wrong third field check digit',
+    () => {
+      expect(() => {
+        verifyBoletoService.execute({
+          digitableLine: '21290001192110001210904475617400975870000002000'
+        })
+      }).toThrow(AppError)
+    }
+  )
+
+  it(
+    'should not accept a digitable line containing a wrong bar code check digit',
+    () => {
+      expect(() => {
+        verifyBoletoService.execute({
+          digitableLine: '21290001192110001210904475617405075870000002000'
+        })
+      }).toThrow(AppError)
+    }
+  )
+})
+
+describe('Check bank slip response', () => {
+  it(
+    'should return the correct expiration date when present',
+    () => {
+      const data = verifyBoletoService.execute({
+        digitableLine: '21290001192110001210904475617405975870000002000'
+      })
+
+      expect(data).toHaveProperty('expirationDate', '2018-07-16')
+    }
+  )
+
+  it(
+    'should not return the expiration date when not present',
+    () => {
+      const data = verifyBoletoService.execute({
+        digitableLine: '21290001192110001210904475617405900000000002000'
+      })
+
+      expect(data).not.toHaveProperty('expirationDate')
+
+      const data2 = verifyBoletoService.execute({
+        digitableLine: '21290001192110001210904475617405909990000002000'
+      })
+
+      expect(data2).not.toHaveProperty('expirationDate')
+    }
+  )
+
+  it(
+    'should return the correct amount when present',
+    () => {
+      const data = verifyBoletoService.execute({
+        digitableLine: '21290001192110001210904475617405975870000002000'
+      })
+
+      expect(data).toHaveProperty('amount', 20.00)
+
+      const data2 = verifyBoletoService.execute({
+        digitableLine: '21290001192110001210904475617405900010000002000'
+      })
+
+      expect(data2).toHaveProperty('amount', 100000020.00)
+    }
+  )
+
+  it(
+    'should not return the amount when not present',
+    () => {
+      const data = verifyBoletoService.execute({
+        digitableLine: '21290001192110001210904475617405975870000000000'
+      })
+
+      expect(data).not.toHaveProperty('amount')
+    }
+  )
+
+  it(
+    'should return the correct bar code',
+    () => {
+      const data = verifyBoletoService.execute({
+        digitableLine: '21290001192110001210904475617405975870000002000'
+      })
+
+      expect(data).toHaveProperty('barCode', '21299758700000020000001121100012100447561740')
+    }
+  )
+})
