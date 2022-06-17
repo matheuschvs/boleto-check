@@ -15,7 +15,11 @@ class VerifyBoletoService {
     }
   }
 
-  getCheckDigit(line: string, module: 10 | 11) {
+  getCheckDigit(
+    line: string,
+    module: 10 | 11 = 10,
+    boletoType: 'bank' | 'collection' = 'collection'
+  ) {
     let currentFactor = 2
     let product = ''
     let sum = 0
@@ -39,7 +43,11 @@ class VerifyBoletoService {
     }
 
     result = 11 - (sum % 11)
-    return result === 10 || result === 11 ? 0 : result
+    if (boletoType === 'collection') {
+      return result === 10 || result === 11 ? 0 : result
+    }
+
+    return result === 10 || result === 11 || result === 0 ? 1 : result
   }
 }
 
