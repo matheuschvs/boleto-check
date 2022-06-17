@@ -15,6 +15,12 @@ class VerifyBoletoService {
     if (digitableLine.length > 48 || digitableLine.length < 47) {
       throw new AppError('The digitable line must contain between 47 and 48 numbers')
     }
+
+    if (digitableLine.length === 47) {
+      this.checkBankSlipDigitableLine(digitableLine)
+    } else {
+      this.checkCollectionSlipDigitableLine(digitableLine)
+    }
   }
 
   getCheckDigit(
@@ -71,6 +77,59 @@ class VerifyBoletoService {
     }
 
     return currentDate.format('YYYY-MM-DD')
+  }
+
+  checkBankSlipDigitableLine(digitableLine: string) {
+
+  }
+
+  checkCollectionSlipDigitableLine(digitableLine: string) {
+    if (digitableLine[0] !== '8') {
+      throw new AppError('Invalid product identifier')
+    }
+
+    if (digitableLine[1] === '0') {
+      throw new AppError('Invalid segment identifier')
+    }
+
+    const valueId = +digitableLine[2]
+
+    if (valueId < 6) {
+      throw new AppError('Invalid value identifier')
+    }
+
+    const firstFieldCheckDigitCheckLine = digitableLine.substring(0, 11)
+    const secondFieldCheckDigitCheckLine = digitableLine.substring(12, 23)
+    const thirdFieldCheckDigitCheckLine = digitableLine.substring(24, 35)
+    const fourthFieldCheckDigitCheckLine = digitableLine.substring(36, 47)
+
+    const generalCheckDigitCheckLine = digitableLine.substring(0, 3) +
+      digitableLine.substring(4, 11) +
+      secondFieldCheckDigitCheckLine +
+      thirdFieldCheckDigitCheckLine +
+      fourthFieldCheckDigitCheckLine
+
+    const module = valueId > 7 ? 11 : 10
+
+    if (this.getCheckDigit(generalCheckDigitCheckLine, module) !== +digitableLine[3]) {
+      throw new AppError('Invalid general check digit')
+    }
+
+    if (this.getCheckDigit(firstFieldCheckDigitCheckLine, module) !== +digitableLine[11]) {
+      throw new AppError('Invalid first field check digit')
+    }
+
+    if (this.getCheckDigit(secondFieldCheckDigitCheckLine, module) !== +digitableLine[23]) {
+      throw new AppError('Invalid second field check digit')
+    }
+
+    if (this.getCheckDigit(thirdFieldCheckDigitCheckLine, module) !== +digitableLine[35]) {
+      throw new AppError('Invalid third field check digit')
+    }
+
+    if (this.getCheckDigit(fourthFieldCheckDigitCheckLine, module) !== +digitableLine[47]) {
+      throw new AppError('Invalid fourth field check digit')
+    }
   }
 }
 
