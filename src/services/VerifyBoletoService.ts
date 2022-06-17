@@ -1,4 +1,6 @@
-import { AppError } from "../errors/AppError";
+import dayjs from 'dayjs'
+
+import { AppError } from '../errors/AppError'
 
 interface IRequest {
   digitableLine: string;
@@ -48,6 +50,27 @@ class VerifyBoletoService {
     }
 
     return result === 10 || result === 11 || result === 0 ? 1 : result
+  }
+
+  getExpirationDateByFactor(factor: number) {
+    let currentFactor = 4800
+    let currentDate = dayjs('2010-11-28')
+
+    for (let i = 0; i < 8999; i += 1) {
+      if (factor === currentFactor) {
+        break
+      }
+
+      if (currentFactor === 9999) {
+        currentFactor = 1000
+      } else {
+        currentFactor += 1
+      }
+
+      currentDate = currentDate.add(1, 'day')
+    }
+
+    return currentDate.format('YYYY-MM-DD')
   }
 }
 
