@@ -323,6 +323,12 @@ describe('Check collection slip response', () => {
       })
 
       expect(data).toHaveProperty('expirationDate', '2022-03-11')
+
+      const data2 = verifyBoletoService.execute({
+        digitableLine: '876500000016392758412028220220311009000179670443'
+      })
+
+      expect(data2).toHaveProperty('expirationDate', '2022-03-11')
     }
   )
 
@@ -520,6 +526,12 @@ describe('Check bank slip response', () => {
       })
 
       expect(data).toHaveProperty('expirationDate', '2018-07-16')
+
+      const data2 = verifyBoletoService.execute({
+        digitableLine: '21290001192110001210904475617405530000000002000'
+      })
+
+      expect(data2).toHaveProperty('expirationDate', '2030-08-15')
     }
   )
 
