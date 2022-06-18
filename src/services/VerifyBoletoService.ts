@@ -1,13 +1,25 @@
 import dayjs from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import { AppError } from '../errors/AppError'
+import { formatNumber } from '../utils/formatNumber';
 
 interface IRequest {
   digitableLine: string;
 }
 
+interface IBoletoData {
+  expirationDate?: string;
+  amount?: string;
+  barCode: string;
+}
+
+dayjs.extend(customParseFormat)
+dayjs.extend(isBetween)
+
 class VerifyBoletoService {
-  execute({ digitableLine }: IRequest) {
+  execute({ digitableLine }: IRequest): IBoletoData {
     if (!digitableLine.match(/^\d+$/)) {
       throw new AppError('The digitable line must contain only numbers')
     }
@@ -18,9 +30,10 @@ class VerifyBoletoService {
 
     if (digitableLine.length === 47) {
       this.checkBankSlipDigitableLine(digitableLine)
-    } else {
-      this.checkCollectionSlipDigitableLine(digitableLine)
     }
+
+    const valueId = this.checkCollectionSlipDigitableLine(digitableLine)
+    return this.getCollectionSlipData(digitableLine, valueId)
   }
 
   getCheckDigit(
@@ -130,6 +143,50 @@ class VerifyBoletoService {
     if (this.getCheckDigit(fourthFieldCheckDigitCheckLine, module) !== +digitableLine[47]) {
       throw new AppError('Invalid fourth field check digit')
     }
+
+    return valueId
+  }
+
+  getCollectionSlipData(digitableLine: string, valueId: number) {
+    const boletoData = {} as IBoletoData
+
+    if (valueId === 6 || valueId === 8) {
+      const amountLine = digitableLine.substring(4, 11) +
+        digitableLine.substring(12, 16)
+      const amount = +amountLine
+
+      if (amount !== 0) {
+        boletoData.amount = formatNumber(amount)
+      }
+    }
+
+    const smallIdDateLine = digitableLine.substring(20, 23) +
+      digitableLine.substring(24, 29)
+    const smallIdDate = dayjs(smallIdDateLine, 'YYYYMMDD', true)
+
+    if (smallIdDate.isValid() &&
+      smallIdDate.isBetween('1997-01-01', '3000-01-01', 'day', '[]')
+    ) {
+      boletoData.expirationDate = smallIdDate.format('YYYY-MM-DD')
+    } else {
+      const longIdDateLine = digitableLine.substring(24, 32)
+      const longIdDate = dayjs(longIdDateLine, 'YYYYMMDD', true)
+
+      if (longIdDate.isValid() &&
+        longIdDate.isBetween('1997-01-01', '3000-01-01', 'day', '[]')
+      ) {
+        boletoData.expirationDate = longIdDate.format('YYYY-MM-DD')
+      }
+    }
+
+    const barCode = digitableLine.substring(0, 11) +
+      digitableLine.substring(12, 23) +
+      digitableLine.substring(24, 35) +
+      digitableLine.substring(36, 47)
+
+    boletoData.barCode = barCode
+
+    return boletoData
   }
 }
 
