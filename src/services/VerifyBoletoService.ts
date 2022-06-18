@@ -240,7 +240,7 @@ class VerifyBoletoService {
     ) {
       boletoData.expirationDate = smallIdDate.format('YYYY-MM-DD')
     } else {
-      const longIdDateLine = digitableLine.substring(24, 32)
+      const longIdDateLine = digitableLine.substring(25, 33)
       const longIdDate = dayjs(longIdDateLine, 'YYYYMMDD', true)
 
       if (longIdDate.isValid() &&
