@@ -4,6 +4,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import { AppError } from '../errors/AppError'
 import { formatNumber } from '../utils/formatNumber';
+import { banks } from '../database/banks';
 
 interface IRequest {
   digitableLine: string;
@@ -30,6 +31,7 @@ class VerifyBoletoService {
 
     if (digitableLine.length === 47) {
       this.checkBankSlipDigitableLine(digitableLine)
+      return this.getBankSlipData(digitableLine)
     }
 
     const valueId = this.checkCollectionSlipDigitableLine(digitableLine)
@@ -93,7 +95,76 @@ class VerifyBoletoService {
   }
 
   checkBankSlipDigitableLine(digitableLine: string) {
+    const bankCodeLine = digitableLine.substring(0, 3)
 
+    if (banks.filter(bank => bank.code === +bankCodeLine).length === 0) {
+      throw new AppError('Invalid bank code')
+    }
+
+    if (digitableLine[3] !== '9') {
+      throw new AppError('Invalid currency code')
+    }
+
+    const firstFieldCheckDigitCheckLine = digitableLine.substring(0, 9)
+
+    if (this.getCheckDigit(firstFieldCheckDigitCheckLine) !== +digitableLine[9]) {
+      throw new AppError('Invalid first field check digit')
+    }
+
+    const secondFieldCheckDigitCheckLine = digitableLine.substring(10, 20)
+
+    if (this.getCheckDigit(secondFieldCheckDigitCheckLine) !== +digitableLine[20]) {
+      throw new AppError('Invalid second field check digit')
+    }
+
+    const thirdFieldCheckDigitCheckLine = digitableLine.substring(21, 31)
+
+    if (this.getCheckDigit(thirdFieldCheckDigitCheckLine) !== +digitableLine[31]) {
+      throw new AppError('Invalid third field check digit')
+    }
+
+    const barCodeCheckDigitCheckLine = digitableLine.substring(0, 4) +
+      digitableLine.substring(33, 47) +
+      digitableLine.substring(4, 9) +
+      secondFieldCheckDigitCheckLine +
+      thirdFieldCheckDigitCheckLine
+
+    if (this.getCheckDigit(barCodeCheckDigitCheckLine, 11, 'bank') !== +digitableLine[32]) {
+      throw new AppError('Invalid bar code check digit')
+    }
+  }
+
+  getBankSlipData(digitableLine: string) {
+    const boletoData = {} as IBoletoData
+
+    const expirationDateFactor = +digitableLine.substring(33, 37)
+
+    if (expirationDateFactor >= 1000) {
+      const expirationDate = this.getExpirationDateByFactor(expirationDateFactor)
+      boletoData.expirationDate = expirationDate
+    }
+
+    let amount = 0
+
+    if (expirationDateFactor >= 1000) {
+      amount = +digitableLine.substring(37, 47)
+    } else {
+      amount = +digitableLine.substring(33, 47)
+    }
+
+    if (amount > 0) {
+      boletoData.amount = formatNumber(amount)
+    }
+
+    const barCode = digitableLine.substring(0, 4) +
+      digitableLine.substring(32, 47) +
+      digitableLine.substring(4, 9) +
+      digitableLine.substring(10, 20) +
+      digitableLine.substring(21, 31)
+
+    boletoData.barCode = barCode
+
+    return boletoData
   }
 
   checkCollectionSlipDigitableLine(digitableLine: string) {
