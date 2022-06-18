@@ -527,13 +527,13 @@ describe('Check bank slip response', () => {
     'should not return the expiration date when not present',
     () => {
       const data = verifyBoletoService.execute({
-        digitableLine: '21290001192110001210904475617405900000000002000'
+        digitableLine: '21290001192110001210904475617405700000000002000'
       })
 
       expect(data).not.toHaveProperty('expirationDate')
 
       const data2 = verifyBoletoService.execute({
-        digitableLine: '21290001192110001210904475617405909990000002000'
+        digitableLine: '21290001192110001210904475617405109990000002000'
       })
 
       expect(data2).not.toHaveProperty('expirationDate')
@@ -550,10 +550,10 @@ describe('Check bank slip response', () => {
       expect(data).toHaveProperty('amount', '20.00')
 
       const data2 = verifyBoletoService.execute({
-        digitableLine: '21290001192110001210904475617405900010000002000'
+        digitableLine: '21290001192110001210904475617405200010000002000'
       })
 
-      expect(data2).toHaveProperty('amount', '100000020.00')
+      expect(data2).toHaveProperty('amount', '100,000,020.00')
     }
   )
 
@@ -561,7 +561,7 @@ describe('Check bank slip response', () => {
     'should not return the amount when not present',
     () => {
       const data = verifyBoletoService.execute({
-        digitableLine: '21290001192110001210904475617405975870000000000'
+        digitableLine: '21290001192110001210904475617405175870000000000'
       })
 
       expect(data).not.toHaveProperty('amount')
