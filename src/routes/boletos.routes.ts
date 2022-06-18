@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { VerifyBoletoController } from '../controllers/verifyBoletoController'
+import { VerifyBoletoController } from '../controllers/VerifyBoletoController'
 
 const verifyBoletoController = new VerifyBoletoController()
 
