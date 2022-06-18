@@ -330,7 +330,7 @@ describe('Check collection slip response', () => {
     'should not return the expiration date when not present',
     () => {
       const data = verifyBoletoService.execute({
-        digitableLine: '876000000011392758412028235115202004000179670443'
+        digitableLine: '876200000019392758412028235115202006000179670443'
       })
 
       expect(data).not.toHaveProperty('expirationDate')
@@ -364,7 +364,7 @@ describe('Check collection slip response', () => {
     'should not return the amount when not present',
     () => {
       const data = verifyBoletoService.execute({
-        digitableLine: '876000000001000058412028203115202004000179670443'
+        digitableLine: '876700000006000058412024203115202004000179670443'
       })
 
       expect(data).not.toHaveProperty('amount')
@@ -378,7 +378,7 @@ describe('Check collection slip response', () => {
         digitableLine: '876000000011392758412028203115202004000179670443'
       })
 
-      expect(data).toHaveProperty('barCode', '876000000013927584120220311520200000179670443')
+      expect(data).toHaveProperty('barCode', '87600000001392758412022031152020000017967044')
 
       const data2 = verifyBoletoService.execute({
         digitableLine: '898100000004170001040933617624115022875216954536'
