@@ -1,0 +1,11 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Boleto Check",
+    "description": "Uma API capaz de verificar a linha digitável de boletos de título bancário e de pagamento de concessionárias, além de retornar os dados existentes nela caso a mesma seja válida.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "matheuschaves21@gmail.com"
+    }
+  }
+}
