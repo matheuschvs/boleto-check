@@ -1,0 +1,70 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Boleto Check",
+    "description": "Uma API capaz de verificar a linha digitável de boletos de título bancário e de pagamento de concessionárias, além de retornar os dados existentes neles caso a linha digitável seja válida.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "matheuschaves21@gmail.com"
+    }
+  },
+  "paths": {
+    "/boleto/{digitableLine}": {
+      "get": {
+        "tags": [
+          "boleto"
+        ],
+        "summary": "Validação da linha digitável do boleto",
+        "description": "Recebe a linha digitável do boleto e verifica se a mesma é válida, sendo válida devolve os dados do boleto",
+        "responses": {
+          "200": {
+            "description": "Linha digitável válida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "string",
+                      "required": "false"
+                    },
+                    "expirationDate": {
+                      "type": "string",
+                      "required": "false"
+                    },
+                    "barCode": {
+                      "type": "string",
+                      "required": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Linha digitável inválida - Motivos de comum ocorrência : Algum dos dígitos verificadores inválidos | Código de banco inválido | Identificador de produto, segmento ou valor inválido"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "digitableLine",
+          "in": "path",
+          "description": "linha digitável do boleto",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/api-docs": {
+      "get": {
+        "tags": [
+          "docs"
+        ],
+        "summary": "Link para esta documentação"
+      }
+    }
+  }
+}
