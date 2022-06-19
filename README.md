@@ -11,7 +11,7 @@ Após clonar o repositório e instalar as dependências, executar:
 ```bash
   yarn test
 ```
-para iniciar os testes e gerar o arquivo de cobertura de testes.
+para iniciar os testes e gerar o diretório de cobertura de testes.
 ```bash
   yarn dev
 ```
