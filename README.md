@@ -17,6 +17,28 @@ para iniciar os testes e gerar o diretório de cobertura de testes.
 ```
 para iniciar o servidor de desenvolvimento.
 
+##### Utilizando Docker
+```bash
+  docker-compose up
+```
+para iniciar o container.
+```bash
+  docker-compose up -d
+```
+para iniciar o container em plano de fundo.
+```bash
+  docker-compose start
+```
+para iniciar o container após a criação.
+```bash
+  docker-compose stop
+```
+para parar o container.
+```bash
+  docker-compose down
+```
+para remover o container.
+
 
 ## Rotas
 
